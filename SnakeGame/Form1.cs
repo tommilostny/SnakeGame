@@ -10,8 +10,8 @@ namespace SnakeGame
 {
     public partial class Form1 : Form
     {
-        string smer = "doprava";
-        bool zmena_smeru = false;
+        string direction = "right";
+        bool change_direction = false;
         ulong score = 0;
         ulong highscore;
         uint score_rate;
@@ -19,9 +19,9 @@ namespace SnakeGame
         int x_food, y_food;
 
         List<PictureBox> pictureBoxes = new List<PictureBox>();
-        List<int> x_souradnice = new List<int>();
-        List<int> y_souradnice = new List<int>();
-        int delka_hada = 1;
+        List<int> x_body_points = new List<int>();
+        List<int> y_body_points = new List<int>();
+        int snake_length = 1;
 
         Dictionary<string, Bitmap> pictures = new Dictionary<string, Bitmap>();
 
@@ -63,45 +63,45 @@ namespace SnakeGame
             return 0;
         }
 
-        private void NacistObrazek(string key, PictureBox pictureBox)
+        private void LoadImage(string key, PictureBox pictureBox)
         {
             pictureBox.Image = pictures[key];
         }
 
-        public void NovaHra()//Inicializace výchozích hodnot + start nové hry
+        public void NewGame()//Inicializace výchozích hodnot + start nové hry
         {
-            pcbHlava.Location = new Point(300, 120);//Výchozí pozice hlavy
-            NacistObrazek("head_right", pcbHlava);
-            smer = "doprava";
+            pcbHead.Location = new Point(300, 120);//Výchozí pozice hlavy
+            LoadImage("head_right", pcbHead);
+            direction = "right";
 
             score = 0;
             labelScore.Text = "SCORE: " + score.ToString();
             labelHs.Text = "HIGHSCORE: " + highscore.ToString();
 
-            GenerovatJidlo();
+            GenerateFood();
 
             pictureBoxes = new List<PictureBox>();
-            x_souradnice = new List<int>();
-            y_souradnice = new List<int>();
+            x_body_points = new List<int>();
+            y_body_points = new List<int>();
 
             panelGame.Controls.Clear();
             panelGame.Controls.Add(pcbFood);
-            panelGame.Controls.Add(pcbHlava);
+            panelGame.Controls.Add(pcbHead);
 
-            delka_hada = 1;//První dílek těla ve výchozí pozici za hlavou
-            x_souradnice.Add(270);
-            y_souradnice.Add(120);
-            GenerovatTelo();
+            snake_length = 1;//První dílek těla ve výchozí pozici za hlavou
+            x_body_points.Add(270);
+            y_body_points.Add(120);
+            GenerateBodyPart();
             
             timer1.Interval = (trackBar1.Value + 10) * 15;
             score_rate = (uint)Math.Floor((40.0 - (double)trackBar1.Value * 1.88));
             timer1.Start();
         }
 
-        private void KonecHry()
+        private void GameOver()
         {
             timer1.Stop();
-            panelKonecHry.Visible = true;
+            panelGameOver.Visible = true;
             if (score > highscore)
             {
                 highscore = score;
@@ -115,35 +115,35 @@ namespace SnakeGame
             buttonKonecAno.Focus();
         }
 
-        private bool JidloOK(int xs, int ys)
+        private bool Food_OK(int xs, int ys)
         {
-            for (int i = 0; i < x_souradnice.Count(); i++)
+            for (int i = 0; i < x_body_points.Count(); i++)
             {
-                if ((xs == x_souradnice[i] && ys == y_souradnice[i]) || (xs == pcbHlava.Location.X && ys == pcbHlava.Location.Y))
+                if ((xs == x_body_points[i] && ys == y_body_points[i]) || (xs == pcbHead.Location.X && ys == pcbHead.Location.Y))
                     return false;
             }
             return true;
         }
 
-        private void GenerovatJidlo()
+        private void GenerateFood()
         {
             do {
                 y_food = y_food_spawnpoints[random.Next(0, 10)];
                 x_food = x_food_spawnpoints[random.Next(0, 20)];
             }
-            while (!JidloOK(x_food, y_food));
+            while (!Food_OK(x_food, y_food));
             pcbFood.Location = new Point(x_food, y_food);
         }
 
-        private void GenerovatTelo()
+        private void GenerateBodyPart()
         {
             pictureBoxes.Add(new PictureBox());
-            int i = delka_hada - 1;
+            int i = snake_length - 1;
             pictureBoxes[i].Anchor = (AnchorStyles.Top);
-            pictureBoxes[i].Location = new Point(x_souradnice[x_souradnice.Count() - 1], y_souradnice[x_souradnice.Count() - 1]);
+            pictureBoxes[i].Location = new Point(x_body_points[x_body_points.Count() - 1], y_body_points[x_body_points.Count() - 1]);
             pictureBoxes[i].SizeMode = PictureBoxSizeMode.Zoom;
-            NacistObrazek("body", pictureBoxes[i]);
-            pictureBoxes[i].Size = pcbHlava.Size;
+            LoadImage("body", pictureBoxes[i]);
+            pictureBoxes[i].Size = pcbHead.Size;
             pictureBoxes[i].TabIndex = 1;
             pictureBoxes[i].TabStop = true;
             panelGame.Controls.Add(pictureBoxes[i]);
@@ -151,71 +151,71 @@ namespace SnakeGame
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            int x = pcbHlava.Location.X;
-            int y = pcbHlava.Location.Y;
+            int x = pcbHead.Location.X;
+            int y = pcbHead.Location.Y;
 
-            if (delka_hada > 0)//Pohyb těla hada
+            if (snake_length > 0)//Pohyb těla hada
             {
-                pictureBoxes[delka_hada - 1].Location = pcbHlava.Location;
+                pictureBoxes[snake_length - 1].Location = pcbHead.Location;
                 pictureBoxes.Insert(0, pictureBoxes.Last());
-                pictureBoxes.RemoveAt(delka_hada);
+                pictureBoxes.RemoveAt(snake_length);
             }
 
-            x_souradnice.Add(x);
-            y_souradnice.Add(y);
+            x_body_points.Add(x);
+            y_body_points.Add(y);
 
-            switch (smer)
+            switch (direction)
             {
-                case "doprava":
-                    if (zmena_smeru) NacistObrazek("head_right", pcbHlava);
+                case "right":
+                    if (change_direction) LoadImage("head_right", pcbHead);
                     x += 30;
                     break;
-                case "doleva":
-                    if (zmena_smeru) NacistObrazek("head_left", pcbHlava);
+                case "left":
+                    if (change_direction) LoadImage("head_left", pcbHead);
                     x -= 30;
                     break;
-                case "nahoru":
-                    if (zmena_smeru) NacistObrazek("head_up", pcbHlava);
+                case "up":
+                    if (change_direction) LoadImage("head_up", pcbHead);
                     y -= 30;
                     break;
-                case "dolu":
-                    if (zmena_smeru) NacistObrazek("head_down", pcbHlava);
+                case "down":
+                    if (change_direction) LoadImage("head_down", pcbHead);
                     y += 30;
                     break;
                 default:
                     break;
             }
 
-            if (x >= 600 || x < 0 || y >= 300 || y < 0) KonecHry();//Náraz do stěny
-            else pcbHlava.Location = new Point(x, y);//Pohyb hlavy hada
+            if (x >= 600 || x < 0 || y >= 300 || y < 0) GameOver();//Náraz do stěny
+            else pcbHead.Location = new Point(x, y);//Pohyb hlavy hada
 
             foreach (PictureBox item in pictureBoxes)
             {
-                if (item.Location.X == x && item.Location.Y == y) KonecHry();//Náraz do těla hada
+                if (item.Location.X == x && item.Location.Y == y) GameOver();//Náraz do těla hada
             }
 
             if (x == x_food && y == y_food)//Spolnutí sousta
             {
                 score += score_rate;
                 labelScore.Text = "SCORE: " + score.ToString();
-                delka_hada++;
-                GenerovatTelo();
-                GenerovatJidlo();
+                snake_length++;
+                GenerateBodyPart();
+                GenerateFood();
             }
 
-            while (x_souradnice.Count() > delka_hada)
+            while (x_body_points.Count() > snake_length)
             {
-                x_souradnice.Remove(x_souradnice.First());
-                y_souradnice.Remove(y_souradnice.First());
+                x_body_points.Remove(x_body_points.First());
+                y_body_points.Remove(y_body_points.First());
             }
 
-            zmena_smeru = false;
+            change_direction = false;
         }
 
         private void buttonNovaHra_Click(object sender, EventArgs e)//Tlačítko "Nová hra"
         {
             panelMenu.Visible = false;
-            NovaHra();
+            NewGame();
         }
 
         private void buttonKonec_Click(object sender, EventArgs e)//Tlačítko "Konec"
@@ -230,38 +230,38 @@ namespace SnakeGame
 
         private void buttonKonecAno_Click(object sender, EventArgs e)//Tlačítko "Nová hra" při konci hry
         {
-            panelKonecHry.Visible = false;
-            NovaHra();
+            panelGameOver.Visible = false;
+            NewGame();
         }
 
         private void buttonKonecNe_Click(object sender, EventArgs e)//Tlačítko "Zpět do menu" při konci hry
         {
-            panelKonecHry.Visible = false;
+            panelGameOver.Visible = false;
             panelMenu.Visible = true;
             buttonNovaHra.Focus();
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if ((e.KeyCode == Keys.D || e.KeyCode == Keys.Right) && smer != "doleva" && !zmena_smeru)
+            if ((e.KeyCode == Keys.D || e.KeyCode == Keys.Right) && direction != "left" && !change_direction)
             {
-                zmena_smeru = true;
-                smer = "doprava";
+                change_direction = true;
+                direction = "right";
             }
-            else if ((e.KeyCode == Keys.A || e.KeyCode == Keys.Left) && smer != "doprava" && !zmena_smeru)
+            else if ((e.KeyCode == Keys.A || e.KeyCode == Keys.Left) && direction != "right" && !change_direction)
             {
-                zmena_smeru = true;
-                smer = "doleva";
+                change_direction = true;
+                direction = "left";
             }
-            else if ((e.KeyCode == Keys.W || e.KeyCode == Keys.Up) && smer != "dolu" && !zmena_smeru)
+            else if ((e.KeyCode == Keys.W || e.KeyCode == Keys.Up) && direction != "down" && !change_direction)
             {
-                zmena_smeru = true;
-                smer = "nahoru";
+                change_direction = true;
+                direction = "up";
             }
-            else if ((e.KeyCode == Keys.S || e.KeyCode == Keys.Down) && smer != "nahoru" && !zmena_smeru)
+            else if ((e.KeyCode == Keys.S || e.KeyCode == Keys.Down) && direction != "up" && !change_direction)
             {
-                zmena_smeru = true;
-                smer = "dolu";
+                change_direction = true;
+                direction = "down";
             }
         }
     }

@@ -33,12 +33,12 @@
             this.labelScore = new System.Windows.Forms.Label();
             this.panelGame = new System.Windows.Forms.Panel();
             this.pcbFood = new System.Windows.Forms.PictureBox();
-            this.pcbHlava = new System.Windows.Forms.PictureBox();
+            this.pcbHead = new System.Windows.Forms.PictureBox();
             this.labelHs = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.panelMenu = new System.Windows.Forms.Panel();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
-            this.panelKonecHry = new System.Windows.Forms.Panel();
+            this.panelGameOver = new System.Windows.Forms.Panel();
             this.labelKonecScore = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.buttonKonecNe = new System.Windows.Forms.Button();
@@ -53,10 +53,10 @@
             this.label4 = new System.Windows.Forms.Label();
             this.panelGame.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pcbFood)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pcbHlava)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pcbHead)).BeginInit();
             this.panelMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
-            this.panelKonecHry.SuspendLayout();
+            this.panelGameOver.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -79,7 +79,7 @@
             this.panelGame.BackColor = System.Drawing.Color.Transparent;
             this.panelGame.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelGame.Controls.Add(this.pcbFood);
-            this.panelGame.Controls.Add(this.pcbHlava);
+            this.panelGame.Controls.Add(this.pcbHead);
             this.panelGame.Location = new System.Drawing.Point(22, 46);
             this.panelGame.Margin = new System.Windows.Forms.Padding(13);
             this.panelGame.Name = "panelGame";
@@ -100,13 +100,13 @@
             // 
             // pcbHlava
             // 
-            this.pcbHlava.Image = ((System.Drawing.Image)(resources.GetObject("pcbHlava.Image")));
-            this.pcbHlava.Location = new System.Drawing.Point(300, 120);
-            this.pcbHlava.Name = "pcbHlava";
-            this.pcbHlava.Size = new System.Drawing.Size(30, 30);
-            this.pcbHlava.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pcbHlava.TabIndex = 1;
-            this.pcbHlava.TabStop = false;
+            this.pcbHead.Image = ((System.Drawing.Image)(resources.GetObject("pcbHlava.Image")));
+            this.pcbHead.Location = new System.Drawing.Point(300, 120);
+            this.pcbHead.Name = "pcbHlava";
+            this.pcbHead.Size = new System.Drawing.Size(30, 30);
+            this.pcbHead.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pcbHead.TabIndex = 1;
+            this.pcbHead.TabStop = false;
             // 
             // labelHs
             // 
@@ -153,17 +153,17 @@
             // 
             // panelKonecHry
             // 
-            this.panelKonecHry.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.panelKonecHry.BackColor = System.Drawing.Color.Transparent;
-            this.panelKonecHry.Controls.Add(this.labelKonecScore);
-            this.panelKonecHry.Controls.Add(this.label2);
-            this.panelKonecHry.Controls.Add(this.buttonKonecNe);
-            this.panelKonecHry.Controls.Add(this.buttonKonecAno);
-            this.panelKonecHry.Location = new System.Drawing.Point(2, 7);
-            this.panelKonecHry.Name = "panelKonecHry";
-            this.panelKonecHry.Size = new System.Drawing.Size(642, 343);
-            this.panelKonecHry.TabIndex = 6;
-            this.panelKonecHry.Visible = false;
+            this.panelGameOver.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.panelGameOver.BackColor = System.Drawing.Color.Transparent;
+            this.panelGameOver.Controls.Add(this.labelKonecScore);
+            this.panelGameOver.Controls.Add(this.label2);
+            this.panelGameOver.Controls.Add(this.buttonKonecNe);
+            this.panelGameOver.Controls.Add(this.buttonKonecAno);
+            this.panelGameOver.Location = new System.Drawing.Point(2, 7);
+            this.panelGameOver.Name = "panelKonecHry";
+            this.panelGameOver.Size = new System.Drawing.Size(642, 343);
+            this.panelGameOver.TabIndex = 6;
+            this.panelGameOver.Visible = false;
             // 
             // labelKonecScore
             // 
@@ -322,7 +322,7 @@
             this.BackColor = System.Drawing.Color.Lime;
             this.BackgroundImage = global::SnakeGame.Properties.Resources.back;
             this.ClientSize = new System.Drawing.Size(644, 367);
-            this.Controls.Add(this.panelKonecHry);
+            this.Controls.Add(this.panelGameOver);
             this.Controls.Add(this.panelMenu);
             this.Controls.Add(this.labelHs);
             this.Controls.Add(this.panelGame);
@@ -336,12 +336,12 @@
             this.Text = "Snake - Tomáš Milostný, PSA3";
             this.panelGame.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pcbFood)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pcbHlava)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pcbHead)).EndInit();
             this.panelMenu.ResumeLayout(false);
             this.panelMenu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
-            this.panelKonecHry.ResumeLayout(false);
-            this.panelKonecHry.PerformLayout();
+            this.panelGameOver.ResumeLayout(false);
+            this.panelGameOver.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -352,7 +352,7 @@
 
         #endregion
         private System.Windows.Forms.Panel panelGame;
-        private System.Windows.Forms.PictureBox pcbHlava;
+        private System.Windows.Forms.PictureBox pcbHead;
         private System.Windows.Forms.Label labelScore;
         private System.Windows.Forms.PictureBox pcbFood;
         private System.Windows.Forms.Label labelHs;
@@ -364,7 +364,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button buttonJakHrat;
-        private System.Windows.Forms.Panel panelKonecHry;
+        private System.Windows.Forms.Panel panelGameOver;
         private System.Windows.Forms.Label labelKonecScore;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button buttonKonecNe;
