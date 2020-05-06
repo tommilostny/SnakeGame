@@ -5,7 +5,6 @@ using System.Linq;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
-using System.Net.NetworkInformation;
 
 namespace SnakeGame
 {
@@ -26,6 +25,9 @@ namespace SnakeGame
 
         Dictionary<string, Bitmap> pictures = new Dictionary<string, Bitmap>();
 
+        int[] x_food_spawnpoints = new int[20];
+        int[] y_food_spawnpoints = new int[10];
+
         public Form1()
         {
             InitializeComponent();
@@ -38,6 +40,14 @@ namespace SnakeGame
             pictures.Add("head_up", new Bitmap("obr/hlava_nahoru.bmp"));
             pictures.Add("head_down", new Bitmap("obr/hlava_dolu.bmp"));
             pictures.Add("body", new Bitmap("obr/body1.bmp"));
+
+            for (int i = 0; i < x_food_spawnpoints.Length; i++)
+            {
+                x_food_spawnpoints[i] = i * 30;
+
+                if (i < y_food_spawnpoints.Length)
+                    y_food_spawnpoints[i] = i * 30;
+            }
         }
 
         private ulong LoadHighscore()
@@ -117,12 +127,9 @@ namespace SnakeGame
 
         private void GenerovatJidlo()
         {
-            y_food = random.Next(0, 271);
-            x_food = random.Next(0, 571);
-            do
-            {
-                do y_food = random.Next(0, 271); while (y_food % 30 != 0);
-                do x_food = random.Next(0, 571); while (x_food % 30 != 0);
+            do {
+                y_food = y_food_spawnpoints[random.Next(0, 10)];
+                x_food = x_food_spawnpoints[random.Next(0, 20)];
             }
             while (!JidloOK(x_food, y_food));
             pcbFood.Location = new Point(x_food, y_food);
