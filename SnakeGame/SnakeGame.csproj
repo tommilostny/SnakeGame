@@ -65,6 +65,7 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="bin\Debug\Snake.pdf" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -102,6 +103,11 @@
     <None Include="bin\Debug\obr\apple.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="bin\Debug\obr\body1.bmp" />
+    <None Include="bin\Debug\obr\hlava_doleva.bmp" />
+    <None Include="bin\Debug\obr\hlava_dolu.bmp" />
+    <None Include="bin\Debug\obr\hlava_doprava1.bmp" />
+    <None Include="bin\Debug\obr\hlava_nahoru.bmp" />
     <Content Include="ikona.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

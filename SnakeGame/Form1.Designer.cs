@@ -1,4 +1,7 @@
-﻿namespace SnakeGame
+﻿using SnakeGame.Properties;
+using System.Drawing;
+
+namespace SnakeGame
 {
     partial class Form1
     {
@@ -89,7 +92,7 @@
             // pcbFood
             // 
             this.pcbFood.BackColor = System.Drawing.Color.Transparent;
-            this.pcbFood.Image = ((System.Drawing.Image)(resources.GetObject("pcbFood.Image")));
+            this.pcbFood.Image = new Bitmap(Resources.apple);
             this.pcbFood.Location = new System.Drawing.Point(0, 0);
             this.pcbFood.Margin = new System.Windows.Forms.Padding(0);
             this.pcbFood.Name = "pcbFood";

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+using SnakeGame.Properties;
 
 namespace SnakeGame
 {
@@ -19,9 +20,9 @@ namespace SnakeGame
         int x_food, y_food;
 
         List<PictureBox> pictureBoxes = new List<PictureBox>();
+        PictureBox body_refPB = new PictureBox();
         List<int> x_body_points = new List<int>();
         List<int> y_body_points = new List<int>();
-        int snake_length = 1;
 
         Dictionary<string, Bitmap> pictures = new Dictionary<string, Bitmap>();
 
@@ -31,15 +32,15 @@ namespace SnakeGame
         public Form1()
         {
             InitializeComponent();
-            this.KeyPreview = true;
-            this.KeyDown += Form1_KeyDown;
+            KeyPreview = true;
+            KeyDown += Form1_KeyDown;
             highscore = LoadHighscore();
 
-            pictures.Add("head_right", new Bitmap("obr/hlava_doprava1.bmp"));
-            pictures.Add("head_left", new Bitmap("obr/hlava_doleva.bmp"));
-            pictures.Add("head_up", new Bitmap("obr/hlava_nahoru.bmp"));
-            pictures.Add("head_down", new Bitmap("obr/hlava_dolu.bmp"));
-            pictures.Add("body", new Bitmap("obr/body1.bmp"));
+            pictures.Add("head_right", new Bitmap(Resources.hlava_doprava));
+            pictures.Add("head_left", new Bitmap(Resources.hlava_doleva));
+            pictures.Add("head_up", new Bitmap(Resources.hlava_nahoru));
+            pictures.Add("head_down", new Bitmap(Resources.hlava_dolu));
+            pictures.Add("body", new Bitmap(Resources.body));
 
             for (int i = 0; i < x_food_spawnpoints.Length; i++)
             {
@@ -63,15 +64,10 @@ namespace SnakeGame
             return 0;
         }
 
-        private void LoadImage(string key, PictureBox pictureBox)
-        {
-            pictureBox.Image = pictures[key];
-        }
-
         public void NewGame()//Inicializace výchozích hodnot + start nové hry
         {
             pcbHead.Location = new Point(300, 120);//Výchozí pozice hlavy
-            LoadImage("head_right", pcbHead);
+            pcbHead.Image = pictures["head_right"];
             direction = "right";
 
             score = 0;
@@ -88,7 +84,7 @@ namespace SnakeGame
             panelGame.Controls.Add(pcbFood);
             panelGame.Controls.Add(pcbHead);
 
-            snake_length = 1;//První dílek těla ve výchozí pozici za hlavou
+            //První dílek těla ve výchozí pozici za hlavou
             x_body_points.Add(270);
             y_body_points.Add(120);
             GenerateBodyPart();
@@ -137,16 +133,15 @@ namespace SnakeGame
 
         private void GenerateBodyPart()
         {
-            pictureBoxes.Add(new PictureBox());
-            int i = snake_length - 1;
-            pictureBoxes[i].Anchor = (AnchorStyles.Top);
-            pictureBoxes[i].Location = new Point(x_body_points[x_body_points.Count() - 1], y_body_points[x_body_points.Count() - 1]);
-            pictureBoxes[i].SizeMode = PictureBoxSizeMode.Zoom;
-            LoadImage("body", pictureBoxes[i]);
-            pictureBoxes[i].Size = pcbHead.Size;
-            pictureBoxes[i].TabIndex = 1;
-            pictureBoxes[i].TabStop = true;
-            panelGame.Controls.Add(pictureBoxes[i]);
+            PictureBox pb = new PictureBox();
+
+            pb.Location = new Point(x_body_points[x_body_points.Count() - 1], y_body_points[x_body_points.Count() - 1]);
+            pb.SizeMode = PictureBoxSizeMode.Zoom;
+            pb.Image = pictures["body"];
+            pb.Size = pcbHead.Size;
+            panelGame.Controls.Add(pb);
+
+            pictureBoxes.Add(pb);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -154,11 +149,11 @@ namespace SnakeGame
             int x = pcbHead.Location.X;
             int y = pcbHead.Location.Y;
 
-            if (snake_length > 0)//Pohyb těla hada
+            if (pictureBoxes.Count > 0)//Pohyb těla hada
             {
-                pictureBoxes[snake_length - 1].Location = pcbHead.Location;
+                pictureBoxes.Last().Location = pcbHead.Location;
                 pictureBoxes.Insert(0, pictureBoxes.Last());
-                pictureBoxes.RemoveAt(snake_length);
+                pictureBoxes.RemoveAt(pictureBoxes.Count - 1);
             }
 
             x_body_points.Add(x);
@@ -167,19 +162,23 @@ namespace SnakeGame
             switch (direction)
             {
                 case "right":
-                    if (change_direction) LoadImage("head_right", pcbHead);
+                    if (change_direction)
+                        pcbHead.Image = pictures["head_right"];
                     x += 30;
                     break;
                 case "left":
-                    if (change_direction) LoadImage("head_left", pcbHead);
+                    if (change_direction)
+                            pcbHead.Image = pictures["head_left"];
                     x -= 30;
                     break;
                 case "up":
-                    if (change_direction) LoadImage("head_up", pcbHead);
+                    if (change_direction)
+                            pcbHead.Image = pictures["head_up"];
                     y -= 30;
                     break;
                 case "down":
-                    if (change_direction) LoadImage("head_down", pcbHead);
+                    if (change_direction)
+                            pcbHead.Image = pictures["head_down"];
                     y += 30;
                     break;
                 default:
@@ -189,21 +188,22 @@ namespace SnakeGame
             if (x >= 600 || x < 0 || y >= 300 || y < 0) GameOver();//Náraz do stěny
             else pcbHead.Location = new Point(x, y);//Pohyb hlavy hada
 
-            foreach (PictureBox item in pictureBoxes)
-            {
-                if (item.Location.X == x && item.Location.Y == y) GameOver();//Náraz do těla hada
-            }
-
             if (x == x_food && y == y_food)//Spolnutí sousta
             {
                 score += score_rate;
                 labelScore.Text = "SCORE: " + score.ToString();
-                snake_length++;
                 GenerateBodyPart();
                 GenerateFood();
             }
+            else
+            {
+                foreach (PictureBox item in pictureBoxes)
+                {
+                    if (item.Location.X == x && item.Location.Y == y) GameOver();//Náraz do těla hada
+                }
+            }
 
-            while (x_body_points.Count() > snake_length)
+            while (x_body_points.Count > pictureBoxes.Count)
             {
                 x_body_points.Remove(x_body_points.First());
                 y_body_points.Remove(y_body_points.First());
