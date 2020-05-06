@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+using System.Net.NetworkInformation;
 
 namespace SnakeGame
 {
@@ -23,12 +24,20 @@ namespace SnakeGame
         List<int> y_souradnice = new List<int>();
         int delka_hada = 1;
 
+        Dictionary<string, Bitmap> pictures = new Dictionary<string, Bitmap>();
+
         public Form1()
         {
             InitializeComponent();
             this.KeyPreview = true;
             this.KeyDown += Form1_KeyDown;
             highscore = LoadHighscore();
+
+            pictures.Add("head_right", new Bitmap("obr/hlava_doprava1.bmp"));
+            pictures.Add("head_left", new Bitmap("obr/hlava_doleva.bmp"));
+            pictures.Add("head_up", new Bitmap("obr/hlava_nahoru.bmp"));
+            pictures.Add("head_down", new Bitmap("obr/hlava_dolu.bmp"));
+            pictures.Add("body", new Bitmap("obr/body1.bmp"));
         }
 
         private ulong LoadHighscore()
@@ -44,15 +53,15 @@ namespace SnakeGame
             return 0;
         }
 
-        private void NacistObrazek(string cesta, PictureBox pictureBox)
+        private void NacistObrazek(string key, PictureBox pictureBox)
         {
-            pictureBox.Image = new Bitmap(cesta);
+            pictureBox.Image = pictures[key];
         }
 
         public void NovaHra()//Inicializace výchozích hodnot + start nové hry
         {
             pcbHlava.Location = new Point(300, 120);//Výchozí pozice hlavy
-            NacistObrazek("obr/hlava_doprava1.bmp", pcbHlava);
+            NacistObrazek("head_right", pcbHlava);
             smer = "doprava";
 
             score = 0;
@@ -92,6 +101,8 @@ namespace SnakeGame
                 labelKonecScore.Text = "Nové nejvyšší skóre: " + score.ToString();
             }
             else labelKonecScore.Text = "Vaše skóre: " + score.ToString();
+
+            buttonKonecAno.Focus();
         }
 
         private bool JidloOK(int xs, int ys)
@@ -124,7 +135,7 @@ namespace SnakeGame
             pictureBoxes[i].Anchor = (AnchorStyles.Top);
             pictureBoxes[i].Location = new Point(x_souradnice[x_souradnice.Count() - 1], y_souradnice[x_souradnice.Count() - 1]);
             pictureBoxes[i].SizeMode = PictureBoxSizeMode.Zoom;
-            NacistObrazek("obr/body1.bmp", pictureBoxes[i]);
+            NacistObrazek("body", pictureBoxes[i]);
             pictureBoxes[i].Size = pcbHlava.Size;
             pictureBoxes[i].TabIndex = 1;
             pictureBoxes[i].TabStop = true;
@@ -135,33 +146,38 @@ namespace SnakeGame
         {
             int x = pcbHlava.Location.X;
             int y = pcbHlava.Location.Y;
-            int y1 = pcbHlava.Location.Y;
-            int x1 = pcbHlava.Location.X;
+
+            if (delka_hada > 0)//Pohyb těla hada
+            {
+                pictureBoxes[delka_hada - 1].Location = pcbHlava.Location;
+                pictureBoxes.Insert(0, pictureBoxes.Last());
+                pictureBoxes.RemoveAt(delka_hada);
+            }
+
+            x_souradnice.Add(x);
+            y_souradnice.Add(y);
 
             switch (smer)
             {
                 case "doprava":
-                    if (zmena_smeru) NacistObrazek("obr/hlava_doprava1.bmp", pcbHlava);
+                    if (zmena_smeru) NacistObrazek("head_right", pcbHlava);
                     x += 30;
                     break;
                 case "doleva":
-                    if (zmena_smeru) NacistObrazek("obr/hlava_doleva.bmp", pcbHlava);
+                    if (zmena_smeru) NacistObrazek("head_left", pcbHlava);
                     x -= 30;
                     break;
                 case "nahoru":
-                    if (zmena_smeru) NacistObrazek("obr/hlava_nahoru.bmp", pcbHlava);
+                    if (zmena_smeru) NacistObrazek("head_up", pcbHlava);
                     y -= 30;
                     break;
                 case "dolu":
-                    if (zmena_smeru) NacistObrazek("obr/hlava_dolu.bmp", pcbHlava);
+                    if (zmena_smeru) NacistObrazek("head_down", pcbHlava);
                     y += 30;
                     break;
                 default:
                     break;
             }
-
-            x_souradnice.Add(x1);
-            y_souradnice.Add(y1);
 
             if (x >= 600 || x < 0 || y >= 300 || y < 0) KonecHry();//Náraz do stěny
             else pcbHlava.Location = new Point(x, y);//Pohyb hlavy hada
@@ -184,13 +200,6 @@ namespace SnakeGame
             {
                 x_souradnice.Remove(x_souradnice.First());
                 y_souradnice.Remove(y_souradnice.First());
-            }
-
-            if (delka_hada > 0)//Pohyb těla hada
-            {
-                pictureBoxes[delka_hada - 1].Location = new Point(x1, y1);
-                pictureBoxes.Insert(0, pictureBoxes.Last());
-                pictureBoxes.RemoveAt(delka_hada);
             }
 
             zmena_smeru = false;
@@ -222,6 +231,7 @@ namespace SnakeGame
         {
             panelKonecHry.Visible = false;
             panelMenu.Visible = true;
+            buttonNovaHra.Focus();
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
