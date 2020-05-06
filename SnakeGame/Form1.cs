@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
@@ -16,9 +12,9 @@ namespace SnakeGame
     {
         string smer = "doprava";
         bool zmena_smeru = false;
-        int score = 0;
-        int highscore = Convert.ToInt32(File.ReadAllText("highscore.txt"));
-        int score_rate;
+        ulong score = 0;
+        ulong highscore;
+        uint score_rate;
         Random random = new Random();
         int x_food, y_food;
 
@@ -32,6 +28,20 @@ namespace SnakeGame
             InitializeComponent();
             this.KeyPreview = true;
             this.KeyDown += Form1_KeyDown;
+            highscore = LoadHighscore();
+        }
+
+        private ulong LoadHighscore()
+        {
+            if (File.Exists("highscore.txt"))
+                return Convert.ToUInt64(File.ReadAllText("highscore.txt"));
+            else
+            {
+                StreamWriter sw = new StreamWriter("highscore.txt", false);
+                sw.WriteLine("0");
+                sw.Close();
+            }
+            return 0;
         }
 
         private void NacistObrazek(string cesta, PictureBox pictureBox)
@@ -63,23 +73,9 @@ namespace SnakeGame
             x_souradnice.Add(270);
             y_souradnice.Add(120);
             GenerovatTelo();
-
-            if (radioButton1.Checked == true)//Snadná obtížnost
-            {
-                timer1.Interval = 420;
-                score_rate = 6;
-            }
-            else if (radioButton2.Checked == true)//Střední obtížnost
-            {
-                timer1.Interval = 300;
-                score_rate = 15;
-            }
-            else//Těžká obtížnost
-            {
-                timer1.Interval = 150;
-                score_rate = 30;
-            }
-
+            
+            timer1.Interval = (trackBar1.Value + 10) * 15;
+            score_rate = (uint)Math.Floor((40.0 - (double)trackBar1.Value * 1.88));
             timer1.Start();
         }
 
@@ -102,22 +98,22 @@ namespace SnakeGame
         {
             for (int i = 0; i < x_souradnice.Count(); i++)
             {
-                if ((xs == x_souradnice[i] && ys == y_souradnice[i]) || (xs == pcbHlava.Location.X && ys == pcbHlava.Location.Y)) return false;
+                if ((xs == x_souradnice[i] && ys == y_souradnice[i]) || (xs == pcbHlava.Location.X && ys == pcbHlava.Location.Y))
+                    return false;
             }
             return true;
         }
 
         private void GenerovatJidlo()
         {
-            bool jidlo_ok = false;
             y_food = random.Next(0, 271);
             x_food = random.Next(0, 571);
-            while (!jidlo_ok)
+            do
             {
                 do y_food = random.Next(0, 271); while (y_food % 30 != 0);
                 do x_food = random.Next(0, 571); while (x_food % 30 != 0);
-                jidlo_ok = JidloOK(x_food, y_food);
             }
+            while (!JidloOK(x_food, y_food));
             pcbFood.Location = new Point(x_food, y_food);
         }
 
